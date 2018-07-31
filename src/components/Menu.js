@@ -9,7 +9,7 @@ export default class Menu extends React.Component {
         <section className="jumbotron">
           <img src="logo.png" alt="logo" />
           {this.props.isLoggedIn && (
-            <div className="btn btn-danger btn-lg" onClick={logout}>
+            <div className="btn btn-link" onClick={logout}>
               Logout
             </div>
           )}
@@ -17,7 +17,7 @@ export default class Menu extends React.Component {
             <Link to="/account">Account</Link>
           )}
           {!this.props.isLoggedIn && (            
-            <a className="btn btn-success" onClick={login}>
+            <a className="btn btn-link" onClick={login}>
               Login
             </a>            
           )}

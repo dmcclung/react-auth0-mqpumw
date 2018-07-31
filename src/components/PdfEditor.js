@@ -47,15 +47,15 @@ export default class PdfEditor extends React.Component {
   render() {
     return (
       <div>
-        <a className="btn btn-success">
+        <button className="btn btn-secondary">
           Preview
-        </a>
-        <a className="btn btn-success">
+        </button>
+        <button className="btn btn-secondary">
           Reset
-        </a>
-        <a className="btn btn-success" onClick={this.load}>
+        </button>
+        <button className="btn btn-secondary" onClick={this.load}>
           Load
-        </a>
+        </button>
         <input type="file" ref={this.fileInput} accept="application/pdf" style={{"display": "none"}} onChange={this.selectPdf} />
         <canvas ref={this.canvas} />
       </div>
