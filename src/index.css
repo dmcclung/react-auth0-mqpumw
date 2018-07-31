@@ -1,3 +1,8 @@
 h1, p {
   font-family: Lato;
 }
+
+.btn-success {
+  background-color: #060D51;
+  border-color: #060D51;
+}

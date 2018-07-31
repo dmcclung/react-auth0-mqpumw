@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import * as pdfjs from "pdfjs-dist";
 
 export default class PdfEditor extends React.Component {

@@ -7,6 +7,7 @@ import {
 import Home from "./components/Home";
 import Callback from "./components/Callback";
 import Account from "./components/Account";
+import "./index.css";
 
 const PrivateRoute = ({
   component: Component,
