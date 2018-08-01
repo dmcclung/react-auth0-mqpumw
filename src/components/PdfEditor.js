@@ -20,7 +20,7 @@ export default class PdfEditor extends React.Component {
       fileReader.onload = () => {
         pdfjs.getDocument(fileReader.result).then((pdf) => {
           pdf.getPage(1).then((page) => {
-            const scale = 1.5;
+            const scale = 0.75;
             const viewport = page.getViewport(scale);
 
             let context = this.canvas.current.getContext("2d");
@@ -46,18 +46,34 @@ export default class PdfEditor extends React.Component {
 
   render() {
     return (
-      <div>
-        <button className="btn btn-secondary">
-          Preview
-        </button>
-        <button className="btn btn-secondary">
-          Reset
-        </button>
-        <button className="btn btn-secondary" onClick={this.load}>
-          Load
-        </button>
-        <input type="file" ref={this.fileInput} accept="application/pdf" style={{"display": "none"}} onChange={this.selectPdf} />
-        <canvas ref={this.canvas} />
+      <div className="container">
+        <div className="row">
+          <div className="col-md-auto">
+            <button className="btn btn-secondary">
+              Preview
+            </button>
+          </div>
+          <div className="col-md-auto">
+            <button className="btn btn-secondary">
+              Reset
+            </button>
+          </div>
+          <div className="col-md-auto">
+            <button className="btn btn-secondary" onClick={this.load}>
+              Load
+            </button>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <canvas ref={this.canvas} />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <input type="file" ref={this.fileInput} accept="application/pdf" style={{"display": "none"}} onChange={this.selectPdf} />
+          </div>
+        </div>
       </div>
     );
   }

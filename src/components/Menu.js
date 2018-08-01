@@ -6,8 +6,10 @@ export default class Menu extends React.Component {
   render(props) {
     return (
       <div>
-        <section className="jumbotron">
-          <img src="logo.png" alt="logo" />
+        <nav className="navbar navbar-light bg-light">
+          <a className="navbar-brand" href="/">
+            <img src="logo.png" alt="BaseReport logo" />
+          </a>
           {this.props.isLoggedIn && (
             <div className="btn btn-link" onClick={logout}>
               Logout
@@ -21,7 +23,7 @@ export default class Menu extends React.Component {
               Login
             </a>            
           )}
-        </section>
+        </nav>
       </div>
     );
   }
