@@ -1,26 +1,26 @@
 import React, { Component } from "react";
 import Menu from "./Menu";
 import PdfEditor from "./PdfEditor";
-import OverlayViewer from "./OverlayViewer";
+import TextBoxList from "./TextBoxList";
 
 export default class Home extends Component {
   constructor(props) {
     super(props);
 
-    this.onOverlayChange = this.onOverlayChange.bind(this);
-    this.resetOverlayState = this.resetOverlayState.bind(this);
+    this.onBoxChange = this.onBoxChange.bind(this);
+    this.resetBoxState = this.resetBoxState.bind(this);
 
-    this.state = { overlays: [] };
+    this.state = { boxes: [] };
   }
 
-  resetOverlayState() {
-    this.setState({overlays: []});
+  resetBoxState() {
+    this.setState({boxes: []});
   }
 
-  onOverlayChange(overlay) {
+  onBoxChange(box) {
     this.setState(prevState => {
       return {
-        overlays: [...prevState.overlays, overlay ]
+        boxes: [...prevState.boxes, box]
       };
     });
   }
@@ -32,11 +32,13 @@ export default class Home extends Component {
         <div className="container-fluid">
           <div className="row">
             <div className="col">
-              <PdfEditor resetOverlayState={this.resetOverlayState} 
-                onOverlayChange={this.onOverlayChange} />
+              <PdfEditor resetBoxState={this.resetBoxState} 
+                onBoxChange={this.onBoxChange} 
+                boxes={this.state.boxes}/>
             </div>
             <div className="col">
-              <OverlayViewer overlays={this.state.overlays} />
+              <TextBoxList boxes={this.state.boxes}
+                onBoxChange={this.onBoxChange}/>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import * as pdfjs from "pdfjs-dist";
-import { saveAs } from "file-saver/FileSaver"; 
+import { saveAs } from "file-saver"; 
+import * as uuid from "uuid/v4";
 
 export default class PdfEditor extends React.Component {
   constructor(props) {
@@ -11,12 +12,12 @@ export default class PdfEditor extends React.Component {
 
     this.selectPdf = this.selectPdf.bind(this);
     this.load = this.load.bind(this);
-    this.startOverlay = this.startOverlay.bind(this);
-    this.stopOverlay = this.stopOverlay.bind(this);
-    this.drawOverlay = this.drawOverlay.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
     this.preview = this.preview.bind(this);
 
-    this.state = { overlay: {}, scale: 1.0, pdf: undefined, currentPage: 1 };
+    this.state = { mouseDown: {}, scale: 1.0, pdf: undefined, currentPage: 1 };
   }
 
   preview() {
@@ -59,16 +60,23 @@ export default class PdfEditor extends React.Component {
     return { x: x, y: y, width: width, height: height };  
   }
 
-  drawOverlay(event) {
-    if (Object.keys(this.state.overlay).length !== 0 && this.state.pdf !== undefined) {
+  handleMouseMove(event) {
+    if (Object.keys(this.state.mouseDown).length !== 0 && 
+        this.state.pdf !== undefined) {
       const canvas = this.canvasBoxes.current;
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // TODO: draw saved text boxes
+      
+      ctx.strokeStyle = "red";
+
+      this.props.boxes.forEach(box => {
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+      });
+
       const mouse = this.mouseLocation(canvas, event);
       const box = this.calculateBox(mouse.x, mouse.y, 
-        this.state.overlay.x, this.state.overlay.y);
-      ctx.strokeStyle = "red";
+        this.state.mouseDown.x, this.state.mouseDown.y);
+      
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     }
   }
@@ -78,30 +86,28 @@ export default class PdfEditor extends React.Component {
     return {x: event.clientX - rect.left, y: event.clientY - rect.top};
   }
 
-  startOverlay(event) {
+  handleMouseDown(event) {
     const mouse = this.mouseLocation(this.canvasBoxes.current, event);
-    this.setState({ overlay: {x: mouse.x, y: mouse.y }});
+    this.setState({ mouseDown: {x: mouse.x, y: mouse.y }});
   }
 
-  stopOverlay(event) {
-    if (this.state.overlay === {}) {
-      return;
-    }
-
+  handleMouseUp(event) {
     const mouse = this.mouseLocation(this.canvasBoxes.current, event);
-
-    if (mouse.x === this.state.overlay.x ||
-        mouse.y === this.state.overlay.y) {
-          this.setState({ overlay: {} });
+    if (mouse.x === this.state.mouseDown.x ||
+        mouse.y === this.state.mouseDown.y) {
+          this.setState({ mouseDown: {} });
           return;
     }
 
     const box = this.calculateBox(mouse.x, mouse.y,
-      this.state.overlay.x, this.state.overlay.y);
+      this.state.mouseDown.x, this.state.mouseDown.y);
 
-    this.props.onOverlayChange(box);
+    box.key = "None";
+    box.id = uuid();
 
-    this.setState({ overlay: {} });
+    this.props.onBoxChange(box);
+
+    this.setState({ mouseDown: {} });
   }
 
   renderPdf() {
@@ -158,7 +164,7 @@ export default class PdfEditor extends React.Component {
                 </button>
               </div>
               <div className="btn-group mr-2" role="group" aria-label="Reset">
-                <button className="btn btn-secondary" onClick={this.props.resetOverlayState}>
+                <button className="btn btn-secondary" onClick={this.props.resetBoxState}>
                   Reset
                 </button>
               </div>
@@ -193,9 +199,9 @@ export default class PdfEditor extends React.Component {
                       ref={this.canvas}/>
               <canvas className="position-absolute"
                       ref={this.canvasBoxes} 
-                      onMouseDown={this.startOverlay}
-                      onMouseUp={this.stopOverlay} 
-                      onMouseMove={this.drawOverlay}/>
+                      onMouseDown={this.handleMouseDown}
+                      onMouseUp={this.handleMouseUp} 
+                      onMouseMove={this.handleMouseMove}/>
             </div>
           </div>
         </div>
