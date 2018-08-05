@@ -26,10 +26,15 @@ export default class PdfEditor extends React.Component {
   }
 
   zoom(factor) {
+    if (this.state.scale + factor < 1) {
+      return;
+    }
+
     this.setState(prevState => {
       return { scale: prevState.scale + factor };
+    }, () => {
+      this.renderPdf();
     });
-    this.renderPdf();
   }
 
   changePage(inc) {
@@ -40,8 +45,9 @@ export default class PdfEditor extends React.Component {
 
     this.setState(prevState => {
       return { currentPage: prevState.currentPage + inc };
+    }, () => {
+      this.renderPdf();
     });
-    this.renderPdf();
   }
 
   calculateBox(x1, y1, x2, y2) {
@@ -54,19 +60,27 @@ export default class PdfEditor extends React.Component {
   }
 
   drawOverlay(event) {
-    if (this.state.overlay !== {} && this.state.pdf !== undefined) {
+    if (Object.keys(this.state.overlay).length !== 0 && this.state.pdf !== undefined) {
       const canvas = this.canvasBoxes.current;
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const box = this.calculateBox(this.state.overlay.x, this.state.overlay.y, 
-        event.clientX, event.clientY);
+      // TODO: draw saved text boxes
+      const mouse = this.mouseLocation(canvas, event);
+      const box = this.calculateBox(mouse.x, mouse.y, 
+        this.state.overlay.x, this.state.overlay.y);
       ctx.strokeStyle = "red";
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     }
   }
 
+  mouseLocation(canvas, event) {
+    const rect = canvas.getBoundingClientRect();
+    return {x: event.clientX - rect.left, y: event.clientY - rect.top};
+  }
+
   startOverlay(event) {
-    this.setState({ overlay: {x: event.clientX, y: event.clientY }});
+    const mouse = this.mouseLocation(this.canvasBoxes.current, event);
+    this.setState({ overlay: {x: mouse.x, y: mouse.y }});
   }
 
   stopOverlay(event) {
@@ -74,14 +88,16 @@ export default class PdfEditor extends React.Component {
       return;
     }
 
-    if (event.clientX === this.state.overlay.x ||
-        event.clientY === this.state.overlay.y) {
+    const mouse = this.mouseLocation(this.canvasBoxes.current, event);
+
+    if (mouse.x === this.state.overlay.x ||
+        mouse.y === this.state.overlay.y) {
           this.setState({ overlay: {} });
           return;
     }
 
-    const box = this.calculateBox(event.clientX, 
-      event.clientY, this.state.overlay.x, this.state.overlay.y);
+    const box = this.calculateBox(mouse.x, mouse.y,
+      this.state.overlay.x, this.state.overlay.y);
 
     this.props.onOverlayChange(box);
 
@@ -134,43 +150,53 @@ export default class PdfEditor extends React.Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col-md-auto">
-            <button className="btn btn-secondary" onClick={this.preview}>
-              Preview
-            </button>
-          </div>
-          <div className="col-md-auto">
-            <button className="btn btn-secondary" onClick={this.props.resetOverlayState}>
-              Reset
-            </button>
-          </div>
-          <div className="col-md-auto">
-            <button className="btn btn-secondary" onClick={this.load}>
-              Load
-            </button>
+          <div className="col-lg-auto">
+            <div className="btn-toolbar" role="toolbar" aria-label="Toolbar">
+              <div className="btn-group mr-2" role="group" aria-label="Preview">
+                <button className="btn btn-secondary" onClick={this.preview}>
+                  Preview
+                </button>
+              </div>
+              <div className="btn-group mr-2" role="group" aria-label="Reset">
+                <button className="btn btn-secondary" onClick={this.props.resetOverlayState}>
+                  Reset
+                </button>
+              </div>
+              <div className="btn-group mr-2" role="group" aria-label="Load">
+                <button className="btn btn-secondary" onClick={this.load}>
+                  Load
+                </button>
+              </div>
+              <div className="btn-group mr-2" role="group" aria-label="Zoom">
+                <button className="btn btn-secondary" onClick={ (e) => this.zoom(0.25) }>
+                  +
+                </button>
+                <button className="btn btn-secondary" onClick={ (e) => this.zoom(-0.25) }>
+                  -
+                </button>
+              </div>
+              <div className="btn-group mr-2" role="group" aria-label="Navigation">
+                <button className="btn btn-secondary" onClick={ (e) => this.changePage(1) }>
+                  Next
+                </button>
+                <button className="btn btn-secondary" onClick={ (e) => this.changePage(-1) }>
+                  Prev
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div className="row">
           <div className="col">
             <div style={{width: "612px", height: "792px"}}>
-              <canvas className="position-absolute" ref={this.canvas}/>
-              <canvas className="position-absolute" ref={this.canvasBoxes} onMouseDown={this.startOverlay}
-                onMouseUp={this.stopOverlay} onMouseMove={this.drawOverlay}/>
+              <canvas className="position-absolute"
+                      ref={this.canvas}/>
+              <canvas className="position-absolute"
+                      ref={this.canvasBoxes} 
+                      onMouseDown={this.startOverlay}
+                      onMouseUp={this.stopOverlay} 
+                      onMouseMove={this.drawOverlay}/>
             </div>
-          </div>
-          <div className="col">
-            <button className="btn btn-secondary" onClick={ (e) => this.zoom(0.25) }>
-              +
-            </button>
-            <button className="btn btn-secondary" onClick={ (e) => this.zoom(-0.25) }>
-              -
-            </button>
-            <button className="btn btn-secondary" onClick={ (e) => this.changePage(1) }>
-              Next
-            </button>
-            <button className="btn btn-secondary" onClick={ (e) => this.changePage(-1) }>
-              Prev
-            </button>
           </div>
         </div>
         <div className="row">
