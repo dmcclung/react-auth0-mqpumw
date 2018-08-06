@@ -17,10 +17,23 @@ export default class Home extends Component {
     this.setState({boxes: []});
   }
 
-  onBoxChange(box) {
+  onBoxChange(newBox) {
     this.setState(prevState => {
+      let updatedBox = false;
+      const newState = prevState.boxes.map(prevBox => {
+        if (prevBox.id === newBox.id) {
+          prevBox.key = newBox.key;
+          updatedBox = true;
+        }
+        return prevBox;
+      });
+
+      if (!updatedBox) {
+        newState.push(newBox);
+      }
+
       return {
-        boxes: [...prevState.boxes, box]
+        boxes: newState
       };
     });
   }
