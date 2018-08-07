@@ -7,6 +7,7 @@ export default class TextBoxListItem extends React.Component {
         this.keyInput = React.createRef();
 
         this.toggleEditKey = this.toggleEditKey.bind(this);
+        this.deleteKey = this.deleteKey.bind(this);
         this.saveKey = this.saveKey.bind(this);
 
         this.state = { editKey: false };
@@ -21,14 +22,18 @@ export default class TextBoxListItem extends React.Component {
 
     saveKey(event) {
         event.preventDefault();
-
         const key = this.keyInput.current.value;
         // TODO: Need validation here?
         const box = {...this.props.box};
         box["key"] = key;
 
-        this.props.onBoxChange(box);
+        this.props.onBoxUpdate(box);
         this.setState({editKey: false});
+    }
+
+    deleteKey(event) {
+        event.preventDefault();
+        this.props.onBoxDelete(this.props.box.id);
     }
 
     render(props) {
@@ -47,7 +52,10 @@ export default class TextBoxListItem extends React.Component {
                         </form>
                     )}
                     {this.props.edit && !this.state.editKey && (
-                        <div>Key: {this.props.box.key} <a href="editKey" onClick={this.toggleEditKey}>Edit Key</a></div>    
+                        <div>Key: {this.props.box.key} 
+                            <a href="editKey" onClick={this.toggleEditKey}>Edit Key</a>
+                            <a href="deleteKey" onClick={this.deleteKey}>Delete Key</a>
+                        </div>    
                     )}
                     {!this.props.edit && (
                         `Key: ${this.props.box.key}`

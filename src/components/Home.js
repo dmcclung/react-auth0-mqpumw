@@ -1,13 +1,15 @@
-import React, { Component } from "react";
+import React from "react";
 import Menu from "./Menu";
 import PdfEditor from "./PdfEditor";
 import TextBoxList from "./TextBoxList";
 
-export default class Home extends Component {
+export default class Home extends React.Component {
   constructor(props) {
     super(props);
 
-    this.onBoxChange = this.onBoxChange.bind(this);
+    this.onBoxCreate = this.onBoxCreate.bind(this);
+    this.onBoxDelete = this.onBoxDelete.bind(this);
+    this.onBoxUpdate = this.onBoxUpdate.bind(this);
     this.resetBoxState = this.resetBoxState.bind(this);
 
     this.state = { boxes: [] };
@@ -17,25 +19,26 @@ export default class Home extends Component {
     this.setState({boxes: []});
   }
 
-  onBoxChange(newBox) {
+  onBoxDelete(id) {
     this.setState(prevState => {
-      let updatedBox = false;
-      const newState = prevState.boxes.map(prevBox => {
-        if (prevBox.id === newBox.id) {
-          prevBox.key = newBox.key;
-          updatedBox = true;
-        }
-        return prevBox;
-      });
-
-      if (!updatedBox) {
-        newState.push(newBox);
-      }
-
-      return {
-        boxes: newState
-      };
+      return { boxes: prevState.boxes.filter(box => {
+        return box.id !== id;
+      })};
     });
+  }
+
+  onBoxCreate(box) {
+    this.setState(prevState => {
+      return { boxes: [...prevState.boxes, box] };
+    });
+  }
+
+  onBoxUpdate(box) {
+    this.setState(prevState => {
+      return { boxes: prevState.boxes.map(prevBox => {
+        return prevBox.id === box.id ? box : prevBox;
+      })};
+    })
   }
 
   render() {
@@ -46,12 +49,13 @@ export default class Home extends Component {
           <div className="row">
             <div className="col">
               <PdfEditor resetBoxState={this.resetBoxState} 
-                onBoxChange={this.onBoxChange} 
+                onBoxCreate={this.onBoxCreate} 
                 boxes={this.state.boxes}/>
             </div>
             <div className="col">
               <TextBoxList boxes={this.state.boxes}
-                onBoxChange={this.onBoxChange}/>
+                onBoxUpdate={this.onBoxUpdate}
+                onBoxDelete={this.onBoxDelete}/>
             </div>
           </div>
         </div>

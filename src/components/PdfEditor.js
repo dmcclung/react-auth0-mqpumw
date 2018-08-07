@@ -20,6 +20,21 @@ export default class PdfEditor extends React.Component {
     this.state = { mouseDown: {}, scale: 1.0, pdf: undefined, currentPage: 1 };
   }
 
+  componentDidUpdate() {
+    this.renderBoxes();
+  }
+
+  renderBoxes() {
+    const canvas = this.canvasBoxes.current;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "red";
+
+    this.props.boxes.forEach(box => {
+      ctx.strokeRect(box.x, box.y, box.width, box.height);
+    });
+  }
+
   preview() {
     this.canvas.current.toBlob(blob => {
       saveAs(blob, "download.png");
@@ -47,7 +62,7 @@ export default class PdfEditor extends React.Component {
     this.setState(prevState => {
       return { currentPage: prevState.currentPage + inc };
     }, () => {
-      this.renderPdf();
+      this.renderPdf();  
     });
   }
 
@@ -63,16 +78,9 @@ export default class PdfEditor extends React.Component {
   handleMouseMove(event) {
     if (Object.keys(this.state.mouseDown).length !== 0 && 
         this.state.pdf !== undefined) {
+      this.renderBoxes();
       const canvas = this.canvasBoxes.current;
       const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      ctx.strokeStyle = "red";
-
-      this.props.boxes.forEach(box => {
-        ctx.strokeRect(box.x, box.y, box.width, box.height);
-      });
-
       const mouse = this.mouseLocation(canvas, event);
       const box = this.calculateBox(mouse.x, mouse.y, 
         this.state.mouseDown.x, this.state.mouseDown.y);
@@ -103,9 +111,12 @@ export default class PdfEditor extends React.Component {
       this.state.mouseDown.x, this.state.mouseDown.y);
 
     box.key = "None";
+    box.active = false;
+    box.page = this.state.currentPage;
+    box.scale = this.state.scale;
     box.id = uuid();
 
-    this.props.onBoxChange(box);
+    this.props.onBoxCreate(box);
 
     this.setState({ mouseDown: {} });
   }

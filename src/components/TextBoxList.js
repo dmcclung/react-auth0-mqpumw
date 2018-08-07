@@ -24,14 +24,10 @@ export default class TextBoxList extends React.Component {
     }
 
     render() {
-        // TODO: Need some kind of key input field
-        // If in edit mode, display extra edit symbol
-        // and delete symbol
-        // click edit and list item is replaced with
-        // text input field with done button
         const boxListItems = this.props.boxes.map((box) => {
             return <TextBoxListItem key={box.id} box={box} edit={this.state.edit} 
-                        onBoxChange={this.props.onBoxChange}/>;
+                        onBoxUpdate={this.props.onBoxUpdate}
+                        onBoxDelete={this.props.onBoxDelete}/>;
         });
 
         return (
