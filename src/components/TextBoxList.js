@@ -27,7 +27,8 @@ export default class TextBoxList extends React.Component {
         const boxListItems = this.props.boxes.map((box) => {
             return <TextBoxListItem key={box.id} box={box} edit={this.state.edit} 
                         onBoxUpdate={this.props.onBoxUpdate}
-                        onBoxDelete={this.props.onBoxDelete}/>;
+                        onBoxDelete={this.props.onBoxDelete}
+                        onBoxSelect={this.props.onBoxSelect}/>;
         });
 
         return (

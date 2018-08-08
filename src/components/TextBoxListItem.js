@@ -9,6 +9,7 @@ export default class TextBoxListItem extends React.Component {
         this.toggleEditKey = this.toggleEditKey.bind(this);
         this.deleteKey = this.deleteKey.bind(this);
         this.saveKey = this.saveKey.bind(this);
+        this.setActive = this.setActive.bind(this);
 
         this.state = { editKey: false };
     }
@@ -36,8 +37,16 @@ export default class TextBoxListItem extends React.Component {
         this.props.onBoxDelete(this.props.box.id);
     }
 
-    render(props) {
-        return (<li className="list-group-item">
+    setActive() {
+        this.props.onBoxSelect(this.props.box);
+    }
+
+    render() {
+        let className = "list-group-item";
+        if (this.props.box.active) {
+            className += " active";
+        }
+        return (<li className={className} onClick={this.setActive}>
                     {this.props.edit && this.state.editKey && (
                         <form>
                             <div className="form-group">

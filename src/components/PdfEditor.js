@@ -28,10 +28,12 @@ export default class PdfEditor extends React.Component {
     const canvas = this.canvasBoxes.current;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "red";
 
     this.props.boxes.forEach(box => {
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
+      if (box.page === this.state.currentPage) {
+        ctx.strokeStyle = box.active ? "green" : "red";
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+      }
     });
   }
 
@@ -62,7 +64,7 @@ export default class PdfEditor extends React.Component {
     this.setState(prevState => {
       return { currentPage: prevState.currentPage + inc };
     }, () => {
-      this.renderPdf();  
+      this.renderPdf();
     });
   }
 
@@ -84,7 +86,7 @@ export default class PdfEditor extends React.Component {
       const mouse = this.mouseLocation(canvas, event);
       const box = this.calculateBox(mouse.x, mouse.y, 
         this.state.mouseDown.x, this.state.mouseDown.y);
-      
+      ctx.strokeStyle = "red";
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     }
   }
@@ -110,6 +112,7 @@ export default class PdfEditor extends React.Component {
     const box = this.calculateBox(mouse.x, mouse.y,
       this.state.mouseDown.x, this.state.mouseDown.y);
 
+    //TODO: consider modal dialog here for key
     box.key = "None";
     box.active = false;
     box.page = this.state.currentPage;
@@ -141,6 +144,8 @@ export default class PdfEditor extends React.Component {
         viewport: viewport
       };
       page.render(renderContext);
+
+      this.forceUpdate();
     });
   }
 

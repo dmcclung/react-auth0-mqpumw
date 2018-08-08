@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { login, logout } from "../utils/Auth";
 
 export default class Menu extends React.Component {
-  render(props) {
+  render() {
     return (
       <div>
         <nav className="navbar navbar-light bg-light">

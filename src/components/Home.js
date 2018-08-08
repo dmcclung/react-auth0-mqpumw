@@ -10,6 +10,7 @@ export default class Home extends React.Component {
     this.onBoxCreate = this.onBoxCreate.bind(this);
     this.onBoxDelete = this.onBoxDelete.bind(this);
     this.onBoxUpdate = this.onBoxUpdate.bind(this);
+    this.onBoxSelect = this.onBoxSelect.bind(this);
     this.resetBoxState = this.resetBoxState.bind(this);
 
     this.state = { boxes: [] };
@@ -38,7 +39,16 @@ export default class Home extends React.Component {
       return { boxes: prevState.boxes.map(prevBox => {
         return prevBox.id === box.id ? box : prevBox;
       })};
-    })
+    });
+  }
+
+  onBoxSelect(box) {
+    this.setState(prevState => {
+      return { boxes: prevState.boxes.map(prevBox => {
+        prevBox.active = prevBox.id === box.id ? true : false;
+        return prevBox;
+      })};
+    });
   }
 
   render() {
@@ -55,7 +65,13 @@ export default class Home extends React.Component {
             <div className="col">
               <TextBoxList boxes={this.state.boxes}
                 onBoxUpdate={this.onBoxUpdate}
-                onBoxDelete={this.onBoxDelete}/>
+                onBoxDelete={this.onBoxDelete}
+                onBoxSelect={this.onBoxSelect}/>
+            </div>
+            <div className="col">
+              <button className="btn btn-secondary">
+                Execute
+              </button>
             </div>
           </div>
         </div>
