@@ -1,12 +1,10 @@
 import React from "react";
-import { saveAs } from "file-saver";
 import TextBoxListItem from "./TextBoxListItem";
 
 export default class TextBoxList extends React.Component {
     constructor(props) {
         super(props);
 
-        this.download = this.download.bind(this);
         this.toggleEditMode = this.toggleEditMode.bind(this);
 
         this.state = { edit: false };
@@ -17,10 +15,6 @@ export default class TextBoxList extends React.Component {
         this.setState(prevState => {
             return {edit: !prevState.edit};
         });
-    }
-
-    download() {
-        saveAs(new Blob([JSON.stringify(this.props.boxes)]), "download.json");
     }
 
     render() {
@@ -46,13 +40,6 @@ export default class TextBoxList extends React.Component {
                             </li>
                             {boxListItems}
                         </ul>
-                    </div>
-                </div>
-                <div className="row">
-                    <div className="col">
-                        <button className="btn btn-secondary" onClick={this.download}>
-                            Download
-                        </button>
                     </div>
                 </div>
             </div>

@@ -68,11 +68,6 @@ export default class Home extends React.Component {
                 onBoxDelete={this.onBoxDelete}
                 onBoxSelect={this.onBoxSelect}/>
             </div>
-            <div className="col">
-              <button className="btn btn-secondary">
-                Execute
-              </button>
-            </div>
           </div>
         </div>
       </div>

@@ -1,21 +1,23 @@
 import React from "react";
-import * as pdfjs from "pdfjs-dist";
-import { saveAs } from "file-saver"; 
+import * as pdfjs from "pdfjs-dist"; 
 import * as uuid from "uuid/v4";
+import fillPdf from "../utils/PdfFiller";
 
 export default class PdfEditor extends React.Component {
   constructor(props) {
     super(props);
     this.fileInput = React.createRef();
+    this.dataFileInput = React.createRef();
     this.canvas = React.createRef();
     this.canvasBoxes = React.createRef();
 
     this.selectPdf = this.selectPdf.bind(this);
     this.load = this.load.bind(this);
+    this.save = this.save.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
-    this.preview = this.preview.bind(this);
+    this.createPdfs = this.createPdfs.bind(this);
 
     this.state = { mouseDown: {}, scale: 1.0, pdf: undefined, currentPage: 1 };
   }
@@ -37,10 +39,20 @@ export default class PdfEditor extends React.Component {
     });
   }
 
-  preview() {
-    this.canvas.current.toBlob(blob => {
-      saveAs(blob, "download.png");
-    });
+  save() {
+    // TODO: save state to web local storage
+    
+  }
+
+  handleDataFile() {
+    let file = this.dataFileInput.current.files[0];
+    if (file) {
+      fillPdf(this.state.pdf, this.state.boxes, file);
+    }
+  }
+
+  createPdfs() {
+    this.dataFileInput.current.click();
   }
 
   zoom(factor) {
@@ -174,9 +186,14 @@ export default class PdfEditor extends React.Component {
         <div className="row">
           <div className="col-lg-auto">
             <div className="btn-toolbar" role="toolbar" aria-label="Toolbar">
-              <div className="btn-group mr-2" role="group" aria-label="Preview">
-                <button className="btn btn-secondary" onClick={this.preview}>
-                  Preview
+              <div className="btn-group mr-2" role="group" aria-label="Create PDFs">
+                <button className="btn btn-secondary" onClick={this.createPdfs}>
+                  Create PDFs
+                </button>
+              </div>
+              <div className="btn-group mr-2" role="group" aria-label="Save">
+                <button className="btn btn-secondary" onClick={this.save}>
+                  Save
                 </button>
               </div>
               <div className="btn-group mr-2" role="group" aria-label="Reset">
@@ -224,6 +241,7 @@ export default class PdfEditor extends React.Component {
         <div className="row">
           <div className="col">
             <input type="file" ref={this.fileInput} accept="application/pdf" style={{"display": "none"}} onChange={this.selectPdf} />
+            <input type="file" ref={this.dataFileInput} accept="text/plain" style={{"display": "none"}} onChange={this.handleDataFile} />
           </div>
         </div>
       </div>
