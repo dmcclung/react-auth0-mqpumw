@@ -1,7 +1,7 @@
 import React from "react";
 import * as pdfjs from "pdfjs-dist"; 
 import * as uuid from "uuid/v4";
-import fillPdf from "../utils/PdfFiller";
+import fillTextBoxes from "../utils/PdfFiller";
 
 export default class PdfEditor extends React.Component {
   constructor(props) {
@@ -18,6 +18,7 @@ export default class PdfEditor extends React.Component {
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.createPdfs = this.createPdfs.bind(this);
+    this.handleDataFile = this.handleDataFile.bind(this);
 
     this.state = { mouseDown: {}, scale: 1.0, pdf: undefined, currentPage: 1 };
   }
@@ -41,13 +42,13 @@ export default class PdfEditor extends React.Component {
 
   save() {
     // TODO: save state to web local storage
-    
+
   }
 
   handleDataFile() {
     let file = this.dataFileInput.current.files[0];
     if (file) {
-      fillPdf(this.state.pdf, this.state.boxes, file);
+      fillTextBoxes(this.state.pdf, this.props.boxes, file);
     }
   }
 
@@ -241,7 +242,7 @@ export default class PdfEditor extends React.Component {
         <div className="row">
           <div className="col">
             <input type="file" ref={this.fileInput} accept="application/pdf" style={{"display": "none"}} onChange={this.selectPdf} />
-            <input type="file" ref={this.dataFileInput} accept="text/plain" style={{"display": "none"}} onChange={this.handleDataFile} />
+            <input type="file" ref={this.dataFileInput} accept="text/csv" style={{"display": "none"}} onChange={this.handleDataFile} />
           </div>
         </div>
       </div>
